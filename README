@@ -1,0 +1,229 @@
+# Investment Research Agent
+
+## Overview
+
+The Investment Research Agent is an AI-powered web application that helps users analyze publicly listed companies by combining real-time financial data with Large Language Model (LLM) based insights.
+
+The application retrieves live stock information using Yahoo Finance and generates investment recommendations using Google's Gemini model through LangGraph.
+
+Users can search for companies such as Apple, Tesla, Microsoft, Reliance, or TCS and receive a complete financial summary, strengths, weaknesses, risk analysis, and an AI-generated investment recommendation.
+
+---
+
+## Tech Stack
+
+- Next.js
+- React
+- Express.js
+- LangGraph
+- Google Gemini API
+- Yahoo Finance API
+- Axios
+
+---
+
+## How to Run
+
+### Clone Repository
+
+```bash
+git clone https://github.com/Aryanpatidar1/investment-research-agent.git
+```
+
+### Install Frontend
+
+```bash
+cd client
+npm install
+```
+
+### Install Backend
+
+```bash
+cd ../server
+npm install
+```
+
+### Environment Variables
+
+Create a `.env` file inside the `server` folder.
+
+```
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+```
+
+### Run Backend
+
+```bash
+npm run dev
+```
+
+### Run Frontend
+
+```bash
+cd ../client
+npm run dev
+```
+
+Frontend:
+
+```
+http://localhost:3000
+```
+
+Backend:
+
+```
+http://localhost:5000
+```
+
+---
+
+## Architecture
+
+User
+
+↓
+
+Next.js Frontend
+
+↓
+
+Express API
+
+↓
+
+LangGraph Workflow
+
+↓
+
+Company Agent
+
+↓
+
+Finance Agent
+
+↓
+
+Yahoo Finance
+
+↓
+
+Gemini LLM
+
+↓
+
+Investment Analysis
+
+↓
+
+Frontend Display
+
+---
+
+## How It Works
+
+1. User enters a company name.
+
+2. Company Agent converts the company name into its stock ticker.
+
+3. Finance Agent retrieves live financial information from Yahoo Finance.
+
+4. Gemini analyzes the company's financial data.
+
+5. LangGraph combines all results.
+
+6. The frontend displays:
+   - Financial Summary
+   - Risk Analysis
+   - Strengths
+   - Weaknesses
+   - AI Investment Recommendation
+
+---
+
+## Key Design Decisions
+
+- Used LangGraph to organize the AI workflow.
+- Used Yahoo Finance because it provides free financial data.
+- Used Gemini for intelligent investment analysis.
+- Used Next.js for a responsive frontend.
+- Used Express.js for backend APIs.
+
+### Trade-offs
+
+- No authentication.
+- No company comparison.
+- Limited to publicly listed companies.
+- Depends on Yahoo Finance API availability.
+
+---
+
+## Example Runs
+
+### Apple
+
+Recommendation:
+INVEST
+
+Confidence:
+92%
+
+Highlights:
+
+- Strong revenue growth
+- Large market capitalization
+- Stable financial position
+
+---
+
+### Tesla
+
+Recommendation:
+HOLD
+
+Confidence:
+81%
+
+Highlights:
+
+- High growth potential
+- Higher market volatility
+
+---
+
+### Reliance
+
+Recommendation:
+INVEST
+
+Confidence:
+89%
+
+Highlights:
+
+- Diversified business
+- Strong long-term outlook
+
+---
+
+## Future Improvements
+
+- User Authentication
+- Portfolio Tracking
+- Company Comparison
+- Historical Stock Charts
+- News Sentiment Analysis
+- PDF Report Generation
+- Multi-language Support
+
+---
+
+## AI Tools Used
+
+- Google Gemini
+- ChatGPT
+- LangGraph Documentation
+- Yahoo Finance Documentation
+
+The project was developed using AI-assisted development for code generation, debugging, architecture planning, and testing.
