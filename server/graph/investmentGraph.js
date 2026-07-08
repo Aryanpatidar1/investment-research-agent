@@ -2,7 +2,7 @@ import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
 
 import { companyAgent } from "../agents/companyAgent.js";
 import { financeAgent } from "../agents/financeAgent.js";
-import { analyzeWithGemini } from "../services/geminiService.js";
+import { analyzeWithGemini, analyzeWithGeminiFallback } from "../services/geminiService.js";
 const GraphState = Annotation.Root({
     company: Annotation(),
     ticker: Annotation(),
@@ -26,6 +26,16 @@ async function financeNode(state) {
     };
 }
 async function recommendationNode(state) {
+    if (!state.financeData) {
+        console.log(`[LangGraph Warning] Live financials unavailable. Triggering Gemini fallback for ${state.company} (${state.ticker}).`);
+        const fallbackResult = await analyzeWithGeminiFallback(state.company, state.ticker);
+        return {
+            ...state,
+            financeData: fallbackResult.financeData,
+            analysis: fallbackResult.analysis
+        };
+    }
+
     const analysis = await analyzeWithGemini(
         JSON.stringify(state.financeData)
     );
