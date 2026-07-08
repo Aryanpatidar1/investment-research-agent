@@ -108,6 +108,7 @@ export default function Home() {
 
   // Notification for copy
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Loading Steps texts
   const loadingSteps = [
@@ -120,6 +121,7 @@ export default function Home() {
 
   // 1. Initial configuration & Auth Check
   useEffect(() => {
+    setMounted(true);
     // Auth Check
     const token = localStorage.getItem("research_token");
     const savedUser = localStorage.getItem("research_user");
@@ -701,6 +703,45 @@ ${result.analysis.weaknesses?.map((w) => `- ${w}`).join("\n") || "N/A"}
                         </p>
                       </div>
                     )}
+
+                    {/* Price Range Chart directly in Overview */}
+                    {chartData.length > 0 && (
+                      <div className="rounded-2xl glass-panel p-6 shadow-sm">
+                        <h3 className="mb-4 text-md font-bold text-slate-800 dark:text-slate-100">
+                          52-Week Stock Price Range (Current vs 52W High/Low)
+                        </h3>
+                        <div className="h-56 w-full mt-4">
+                          {mounted && (
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-color)" vertical={false} />
+                                <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} />
+                                <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} />
+                                <Tooltip
+                                  contentStyle={{
+                                    background: "var(--card-bg)",
+                                    border: "1px solid var(--card-border)",
+                                    borderRadius: "12px",
+                                    color: "var(--foreground)",
+                                    fontSize: "12px",
+                                    backdropFilter: "blur(12px)",
+                                  }}
+                                />
+                                <Bar dataKey="value" radius={[8, 8, 0, 0]} maxBarSize={45}>
+                                  {chartData.map((_, i) => (
+                                    <Cell
+                                      key={i}
+                                      fill={i === 1 ? "var(--primary)" : "var(--text-muted)"}
+                                      fillOpacity={i === 1 ? 0.9 : 0.4}
+                                    />
+                                  ))}
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Right Column: AI Decision Card */}
@@ -764,32 +805,34 @@ ${result.analysis.weaknesses?.map((w) => `- ${w}`).join("\n") || "N/A"}
                     </h3>
                     {chartData.length > 0 ? (
                       <div className="h-72 w-full mt-6">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-color)" vertical={false} />
-                            <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} />
-                            <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} />
-                            <Tooltip
-                              contentStyle={{
-                                background: "var(--card-bg)",
-                                border: "1px solid var(--card-border)",
-                                borderRadius: "12px",
-                                color: "var(--foreground)",
-                                fontSize: "12px",
-                                backdropFilter: "blur(12px)",
-                              }}
-                            />
-                            <Bar dataKey="value" radius={[8, 8, 0, 0]} maxBarSize={50}>
-                              {chartData.map((_, i) => (
-                                <Cell
-                                  key={i}
-                                  fill={i === 1 ? "var(--primary)" : "var(--text-muted)"}
-                                  fillOpacity={i === 1 ? 0.9 : 0.4}
-                                />
-                              ))}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
+                        {mounted && (
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-color)" vertical={false} />
+                              <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} />
+                              <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} />
+                              <Tooltip
+                                contentStyle={{
+                                  background: "var(--card-bg)",
+                                  border: "1px solid var(--card-border)",
+                                  borderRadius: "12px",
+                                  color: "var(--foreground)",
+                                  fontSize: "12px",
+                                  backdropFilter: "blur(12px)",
+                                }}
+                              />
+                              <Bar dataKey="value" radius={[8, 8, 0, 0]} maxBarSize={50}>
+                                {chartData.map((_, i) => (
+                                  <Cell
+                                    key={i}
+                                    fill={i === 1 ? "var(--primary)" : "var(--text-muted)"}
+                                    fillOpacity={i === 1 ? 0.9 : 0.4}
+                                  />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        )}
                       </div>
                     ) : (
                       <p className="text-slate-500 text-xs py-12 text-center">No valuation chart available.</p>

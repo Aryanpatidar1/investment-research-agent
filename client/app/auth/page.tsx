@@ -137,6 +137,11 @@ export default function AuthPage() {
                 ? "Sign in to access your investment portal"
                 : "Register to analyze equities with AI"}
             </p>
+            {isLogin && (
+              <div className="mt-4 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-xs text-left leading-relaxed">
+                <strong>Deployment Note:</strong> If this is your first time using this deployed link, you must <strong>Sign Up</strong> first. Local database profiles do not carry over to deployed servers.
+              </div>
+            )}
           </div>
 
           {error && (
