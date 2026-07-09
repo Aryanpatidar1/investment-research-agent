@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
@@ -59,6 +61,11 @@ body {
   background: var(--input-bg);
   border: 1px solid var(--input-border);
   color: var(--foreground);
+}
+
+.glass-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.8;
 }
 
 .glass-input:focus {

@@ -37,6 +37,11 @@ import {
   ResponsiveContainer,
   Cell,
   CartesianGrid,
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Legend,
 } from "recharts";
 
 type FinanceData = {
