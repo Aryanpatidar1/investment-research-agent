@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "ba78dbc6-d623-46ff-a0fd-b021c8cb0897",
+    "name": "Test User",
+    "email": "test@example.com",
+    "phone": null,
+    "provider": "email",
+    "salt": "a451bc43a557aa9c13b359666f6fbd65",
+    "hash": "b3f3b7459086be514b2ae57e085561728c52b3ddc0efccc33313ab8b6ad3a95067ffbf866881863891d35bdf10d6e0e166949dc661d41f29ad295bbb7ba4ef84",
+    "picture": null,
+    "createdAt": "2026-07-09T05:26:35.459Z"
+  },
+  {
+    "id": "a0abace4-ff0d-4c67-b97a-588d2f17cdf2",
+    "name": "Phone User",
+    "email": null,
+    "phone": "9876543210",
+    "provider": "phone",
+    "picture": null,
+    "createdAt": "2026-07-09T05:26:41.956Z"
+  }
+]

@@ -1,17 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import {
   Shield,
   Mail,
   Lock,
   User,
   ArrowRight,
-  Sun,
-  Moon,
   Loader2,
   Phone,
   Smartphone,
@@ -32,36 +29,19 @@ function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [theme, setTheme] = useState("dark");
   const router = useRouter();
 
   const [apiUrl, setApiUrl] = useState("http://localhost:5000");
-  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-      setTheme("dark");
-      document.documentElement.classList.add("dark");
-    } else {
-      setTheme("light");
-      document.documentElement.classList.remove("dark");
-    }
+    // Always use dark mode
+    document.documentElement.classList.add("dark");
 
     const customApiUrl = localStorage.getItem("research_api_url");
     const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (customApiUrl) setApiUrl(customApiUrl);
     else if (envApiUrl) setApiUrl(envApiUrl);
   }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    if (newTheme === "dark") document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
-  };
 
   const saveSession = (data: { token: string; user: object; message?: string }) => {
     localStorage.setItem("research_token", data.token);
@@ -99,33 +79,6 @@ function AuthForm() {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
-    if (!credentialResponse.credential) {
-      setError("Google sign-in failed. No credential received.");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
-    try {
-      const { data } = await axios.post(`${apiUrl}/api/auth/google`, {
-        credential: credentialResponse.credential,
-      });
-
-      if (data.success) saveSession(data);
-      else setError(data.message || "Google authentication failed");
-    } catch (err: unknown) {
-      const message =
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : "Google sign-in failed. Check backend connection.";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSendOtp = async () => {
     if (!phone.trim() || phone.replace(/\D/g, "").length < 10) {
@@ -212,7 +165,7 @@ function AuthForm() {
         <div className="mesh-orb-2"></div>
       </div>
 
-      <header className="w-full max-w-6xl mx-auto px-6 py-6 flex items-center justify-between z-10">
+      <header className="w-full max-w-6xl mx-auto px-6 py-6 flex items-center z-10">
         <div className="flex items-center gap-3">
           <div className="rounded-xl bg-indigo-500/20 p-2 border border-indigo-500/30">
             <Shield className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
@@ -222,12 +175,6 @@ function AuthForm() {
             <p className="text-xs text-slate-500 dark:text-slate-400">Equity Research Agent</p>
           </div>
         </div>
-        <button
-          onClick={toggleTheme}
-          className="rounded-xl p-2.5 glass-panel text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer"
-        >
-          {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </button>
       </header>
 
       <main className="flex-1 w-full max-w-md mx-auto px-6 flex flex-col justify-center z-10 py-12">
@@ -243,36 +190,6 @@ function AuthForm() {
             </p>
           </div>
 
-          {/* Google Sign In */}
-          <div className="mb-6">
-            {googleClientId ? (
-              <div className="flex justify-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => setError("Google sign-in was cancelled or failed")}
-                  theme={theme === "dark" ? "filled_black" : "outline"}
-                  size="large"
-                  text={isLogin ? "signin_with" : "signup_with"}
-                  shape="rectangular"
-                  width="100%"
-                />
-              </div>
-            ) : (
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-800 dark:text-amber-300">
-                Add <code className="font-mono">NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> in{" "}
-                <code className="font-mono">client/.env.local</code> to enable Google Sign-In.
-              </div>
-            )}
-          </div>
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[var(--card-bg)] px-3 text-slate-500 dark:text-slate-400">or continue with</span>
-            </div>
-          </div>
 
           {/* Auth Mode Tabs */}
           <div className="flex rounded-xl border border-slate-200 dark:border-slate-700 p-1 mb-6">
@@ -483,15 +400,5 @@ function AuthForm() {
 }
 
 export default function AuthPage() {
-  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-  if (googleClientId) {
-    return (
-      <GoogleOAuthProvider clientId={googleClientId}>
-        <AuthForm />
-      </GoogleOAuthProvider>
-    );
-  }
-
   return <AuthForm />;
 }

@@ -11,8 +11,6 @@ import {
   BarChart3,
   Shield,
   Target,
-  Sun,
-  Moon,
   LogOut,
   Settings,
   Globe,
@@ -91,7 +89,6 @@ function formatCurrency(value?: number) {
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [theme, setTheme] = useState("dark");
   
   // API Config
   const [apiUrl, setApiUrl] = useState("http://localhost:5000");
@@ -137,16 +134,8 @@ export default function Home() {
     }
     setUser(JSON.parse(savedUser));
 
-    // Theme Config
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-      setTheme("dark");
-      document.documentElement.classList.add("dark");
-    } else {
-      setTheme("light");
-      document.documentElement.classList.remove("dark");
-    }
+    // Always use dark mode
+    document.documentElement.classList.add("dark");
 
     // API Config
     const customApiUrl = localStorage.getItem("research_api_url");
@@ -209,16 +198,6 @@ export default function Home() {
     checkApiConnection(sanitizedUrl);
   };
 
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    if (newTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("research_token");
@@ -420,14 +399,6 @@ ${result.analysis.weaknesses?.map((w) => `- ${w}`).join("\n") || "N/A"}
               )}
             </div>
 
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 rounded-xl glass-panel border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-              title="Toggle Theme"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
 
             {/* User Dropdown / Sign Out */}
             <div className="flex items-center gap-2 border-l border-slate-200 dark:border-slate-800 pl-2">
