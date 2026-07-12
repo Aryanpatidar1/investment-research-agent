@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import {
   Search,
@@ -11,7 +10,6 @@ import {
   BarChart3,
   Shield,
   Target,
-  LogOut,
   Settings,
   Globe,
   CheckCircle,
@@ -72,11 +70,7 @@ type ResearchResult = {
   analysis: Analysis;
 };
 
-type UserProfile = {
-  id: string;
-  name: string;
-  email: string;
-};
+
 
 function formatCurrency(value?: number) {
   if (value == null) return "N/A";
@@ -87,8 +81,6 @@ function formatCurrency(value?: number) {
 }
 
 export default function Home() {
-  const router = useRouter();
-  const [user, setUser] = useState<UserProfile | null>(null);
   
   // API Config
   const [apiUrl, setApiUrl] = useState("http://localhost:5000");
@@ -121,18 +113,9 @@ export default function Home() {
     "Synthesizing final investment decision and verdict..."
   ];
 
-  // 1. Initial configuration & Auth Check
+  // 1. Initial configuration
   useEffect(() => {
     setMounted(true);
-    // Auth Check
-    const token = localStorage.getItem("research_token");
-    const savedUser = localStorage.getItem("research_user");
-    
-    if (!token || !savedUser) {
-      router.push("/auth");
-      return;
-    }
-    setUser(JSON.parse(savedUser));
 
     // Always use dark mode
     document.documentElement.classList.add("dark");
@@ -151,7 +134,7 @@ export default function Home() {
 
     // Ping API
     checkApiConnection(initialUrl);
-  }, [router]);
+  }, []);
 
   // Handle step-by-step loading simulation
   useEffect(() => {
@@ -199,11 +182,6 @@ export default function Home() {
   };
 
 
-  const handleLogout = () => {
-    localStorage.removeItem("research_token");
-    localStorage.removeItem("research_user");
-    router.push("/auth");
-  };
 
   const addToHistory = (query: string) => {
     const updated = [query, ...searchHistory.filter((item) => item !== query)].slice(0, 5);
@@ -220,22 +198,10 @@ export default function Home() {
     setError("");
     setResult(null);
 
-    const token = localStorage.getItem("research_token");
-    if (!token) {
-      setError("Session expired. Please log in again.");
-      router.push("/auth");
-      return;
-    }
-
     try {
       const { data } = await axios.post(
         `${apiUrl}/api/analyze`,
-        { company: query.trim() },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { company: query.trim() }
       );
 
       if (data.success) {
@@ -245,15 +211,10 @@ export default function Home() {
         setError(data.message || "Analysis failed");
       }
     } catch (err: any) {
-      if (err.response?.status === 401) {
-        setError("Invalid session. Redirecting to login...");
-        handleLogout();
-      } else {
-        setError(
-          err.response?.data?.message ||
-            `Unable to connect to backend at: ${apiUrl}. Check server status.`
-        );
-      }
+      setError(
+        err.response?.data?.message ||
+          `Unable to connect to backend at: ${apiUrl}. Check server status.`
+      );
     } finally {
       setLoading(false);
     }
@@ -304,14 +265,6 @@ ${result.analysis.weaknesses?.map((w) => `- ${w}`).join("\n") || "N/A"}
         { name: "52W High", value: finance.fiftyTwoWeekHigh },
       ]
     : [];
-
-  if (!user) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-slate-900 text-white">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-      </div>
-    );
-  }
 
   return (
     <div className="relative min-h-screen w-full flex flex-col justify-between">
@@ -400,19 +353,6 @@ ${result.analysis.weaknesses?.map((w) => `- ${w}`).join("\n") || "N/A"}
             </div>
 
 
-            {/* User Dropdown / Sign Out */}
-            <div className="flex items-center gap-2 border-l border-slate-200 dark:border-slate-800 pl-2">
-              <span className="hidden lg:inline text-xs font-semibold text-slate-700 dark:text-slate-200 max-w-[100px] truncate">
-                {user.name}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 active:scale-[0.98] cursor-pointer"
-                title="Sign Out"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </div>
           </div>
         </div>
       </header>
