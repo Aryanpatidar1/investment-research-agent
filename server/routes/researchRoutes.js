@@ -3,6 +3,6 @@ import { analyzeCompany } from "../controllers/researchController.js";
 import { authenticate } from "../controllers/authController.js";
 
 const router = express.Router();
-router.post("/analyze", authenticate, analyzeCompany);
+router.post("/analyze", analyzeCompany);
 
 export default router;
